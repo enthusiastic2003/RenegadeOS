@@ -1,49 +1,62 @@
 CC = x86_64-elf-gcc
 CXX = x86_64-elf-c++
 LD = x86_64-elf-gcc
+CC_32 = i686-elf-gcc
 ASM = nasm
+LD_32 = i686-elf-gcc
 
-C_SRC = src/kernel/kernel_main.c src/kernel/gdt.c
-ASM_SRC = src/boot.S src/header.S
-TARGET = build/kernel.elf
+C_SRC_32 = src/bootstrapper/kernel_main.c src/bootstrapper/gdt.c
+ASM_SRC_BOOTSTRAPPER = src/bootstrapper/boot.S src/bootstrapper/header.S
+TARGET_KERN = build/kernel.elf 
+TARGET_BOOTSTRAPER = build/bootstrapper.elf
 
 CC_FLAGS = -g -ffreestanding -mcmodel=large
+CC_FLAGS_32 = -g -ffreestanding -nostdlib
+
 LD_FLAGS = -T linker_scripts.ld -ffreestanding -O2 -nostdlib -lgcc 
 
 OBJS_C = $(patsubst src/%.c, build/%.o, $(C_SRC))
+OBJS_ASM_BOOTSTRAPPER = $(patsubst src/%.S, build/%.o, $(ASM_SRC_BOOTSTRAPPER))
+OBJS_C_32 = $(patsubst src/%.c, build/%.o, $(C_SRC_32))
 OBJS_ASM = $(patsubst src/%.S, build/%.o, $(ASM_SRC))
 
 .PHONY: all clean
 
 create_build_dir:
-	mkdir -p build/kernel
+	mkdir -p build/kernel build/bootstrapper
 
-all: $(OBJS_C) $(OBJS_ASM) create_build_dir
+all: $(OBJS_C) $(OBJS_ASM) $(OBJS_ASM_BOOTSTRAPPER) $(OBJS_C_32) create_build_dir
+	@echo "Linking bootstrapper"
+	$(LD_32) $(LD_FLAGS) $(OBJS_C_32) $(OBJS_ASM_BOOTSTRAPPER) -o $(TARGET_BOOTSTRAPER)
 	@echo "Linking Kernel"
-	$(LD) $(LD_FLAGS) -o $(TARGET) $(OBJS_ASM) $(OBJS_C)
+	$(LD) $(LD_FLAGS) -o $(TARGET_KERN) $(OBJS_ASM) $(OBJS_C)
+	@echo "bootstrapper build complete, placed at $(TARGET_BOOTSTRAPER)"
 	@echo "Kernel build complete, placed at $(TARGET)"
 
 # Compile C files to object files
 build/kernel/%.o: src/kernel/%.c create_build_dir
 	@echo $(C_SRC) 
-	@echo "Building C file $<"
+	@echo "Building 64-bit C file $<"
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
-# Assemble ASM files to object files
-build/%.o: src/%.S $(ASM_SRC) create_build_dir
-	@echo "Assembling ASM file $<"
-	$(ASM) -f elf64 $< -o $@
+build/bootstrapper/%.o: src/bootstrapper/%.c create_build_dir
+	@echo "Building 32-bit C file $<"
+	$(CC_32) $(CC_FLAGS_32) -c $< -o $@
 
+# Assemble ASM files to object files
+build/bootstrapper/%.o: src/bootstrapper/%.S $(ASM_SRC_BOOTSTRAPPER) create_build_dir
+	@echo "Assembling ASM file $<"
+	$(ASM) -f elf32 $< -o $@
 
 clean: 
 	@echo "Cleaning build directory"
 	rm -rf build/*
 	@echo "Cleaned build directory"
 
-iso: $(TARGET)
+iso: $(TARGET) $(TARGET_BOOTSTRAPER)
 	@echo "Creating ISO"
 	mkdir -p isodir/boot/grub
-	cp $(TARGET) isodir/boot/kernel.elf
+	cp $(TARGET) $(TARGET_BOOTSTRAPER) isodir/boot/
 	cp grub.cfg isodir/boot/grub/grub.cfg
 	grub-mkrescue -o build/os.iso ./isodir
 	@echo "ISO created at build/os.iso"

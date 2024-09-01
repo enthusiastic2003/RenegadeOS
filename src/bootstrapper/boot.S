@@ -1,6 +1,6 @@
 global start
-extern preboot_check
 section .mb2_text
+extern preboot_check
 start:
     lea esp, [stack_top]
     ; print `OK`
