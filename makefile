@@ -5,8 +5,8 @@ CC_32 = i686-elf-gcc
 ASM = nasm
 LD_32 = i686-elf-gcc
 
-C_SRC_32 = src/bootstrapper/kernel_main.c src/bootstrapper/gdt.c
-ASM_SRC_BOOTSTRAPPER = src/bootstrapper/boot.S src/bootstrapper/header.S
+C_SRC_32 = src/bootstrapper/kernel_main.c src/bootstrapper/gdt.c src/bootstrapper/stdio.c
+ASM_SRC_BOOTSTRAPPER = src/bootstrapper/boot.S src/bootstrapper/header.S src/bootstrapper/utils.S
 TARGET_KERN = build/kernel.elf 
 TARGET_BOOTSTRAPER = build/bootstrapper.elf
 

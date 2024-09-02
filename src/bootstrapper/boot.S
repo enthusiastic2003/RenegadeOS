@@ -1,11 +1,13 @@
 global start
 section .mb2_text
 extern preboot_check
+extern mode_check
+extern terminal_initialize
+
 start:
-    lea esp, [stack_top]
-    ; print `OK`
-    call preboot_check
-    mov dword [0xb8000], 0x2f4b2f4f
+    mov esp, stack_top
+    call terminal_initialize
+    call mode_check
     hlt
 
 section .bss
