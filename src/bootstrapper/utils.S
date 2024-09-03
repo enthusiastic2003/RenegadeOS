@@ -17,21 +17,24 @@ in_protected_mode:
     mov eax, protected_msg
     push eax
     call bootstrapper_asm_info
-    add esp, 4                ; Clean up stack after function call
+    add esp, 4
+    mov eax, 0                ; Clean up stack after function call
     ret
 
 in_real_mode:
     mov eax, real_msg
     push eax
     call bootstrapper_asm_info
-    add esp, 4                ; Clean up stack after function call
+    add esp, 4
+    mov eax, 1
     ret
 
 in_long_mode:
     mov eax, long_64_msg
     push eax
     call bootstrapper_asm_info
-    add esp, 4                ; Clean up stack after function call
+    add esp, 4
+    mov eax, 2
     ret
 
 section .data
