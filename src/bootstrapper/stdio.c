@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "stdio.h"
-
+#include <stdarg.h>
 size_t terminal_row;
 size_t terminal_column;
 uint8_t terminal_color;
@@ -86,4 +86,93 @@ void terminal_write(const char* data, size_t size)
 void terminal_writestring(const char* data) 
 {
 	terminal_write(data, strlen(data));
+}
+
+void bootstrapper_asm_info(const char* str) 
+{
+	
+	terminal_writestring(str);
+	terminal_writestring("\n");
+
+	return;
+}
+
+// Helper functions for integer to string conversion
+static void itoa(int value, char* str, int base) {
+    static const char digits[] = "0123456789abcdef";
+    char* p = str;
+    int num = value;
+    
+    // Handle special case of 0
+    if (value == 0) {
+        *p++ = '0';
+        *p = '\0';
+        return;
+    }
+    
+    // Handle negative numbers
+    if (num < 0 && base == 10) {
+        *p++ = '-';
+        num = -num;
+    }
+    
+    // Convert to string
+    char* start = p;
+    do {
+        *p++ = digits[num % base];
+        num /= base;
+    } while (num > 0);
+    
+    *p = '\0';
+    
+    // Reverse string
+    char* end = p - 1;
+    while (start < end) {
+        char tmp = *start;
+        *start++ = *end;
+        *end-- = tmp;
+    }
+}
+
+void bprintf(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    
+    const char* p;
+    char buffer[64];
+    size_t length;
+    
+    for (p = format; *p != '\0'; p++) {
+        if (*p != '%') {
+            terminal_putchar(*p);
+            continue;
+        }
+        
+        p++;
+        switch (*p) {
+            case 's': {
+                const char* str = va_arg(args, const char*);
+                terminal_writestring(str);
+                break;
+            }
+            case 'd': {
+                int value = va_arg(args, int);
+                itoa(value, buffer, 10);
+                terminal_writestring(buffer);
+                break;
+            }
+            case 'x': {
+                unsigned int value = va_arg(args, unsigned int);
+                itoa(value, buffer, 16);
+                terminal_writestring(buffer);
+                break;
+            }
+            default:
+                terminal_putchar('%');
+                terminal_putchar(*p);
+                break;
+        }
+    }
+    
+    va_end(args);
 }

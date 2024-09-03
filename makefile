@@ -5,15 +5,15 @@ CC_32 = i686-elf-gcc
 ASM = nasm
 LD_32 = i686-elf-gcc
 
-C_SRC_32 = src/bootstrapper/kernel_main.c src/bootstrapper/gdt.c src/bootstrapper/stdio.c
-ASM_SRC_BOOTSTRAPPER = src/bootstrapper/boot.S src/bootstrapper/header.S src/bootstrapper/utils.S
+C_SRC_32 = src/bootstrapper/gdt.c src/bootstrapper/stdio.c src/bootstrapper/bootmain.c
+ASM_SRC_BOOTSTRAPPER = src/bootstrapper/boot.S src/bootstrapper/header.S src/bootstrapper/utils.S src/bootstrapper/gdt_fl.S
 TARGET_KERN = build/kernel.elf 
 TARGET_BOOTSTRAPER = build/bootstrapper.elf
 
 CC_FLAGS = -g -ffreestanding -mcmodel=large
 CC_FLAGS_32 = -g -ffreestanding -nostdlib
 
-LD_FLAGS = -T linker_scripts.ld -ffreestanding -O2 -nostdlib -lgcc 
+LD_FLAGS = -T linker_scripts.ld -ffreestanding -O2 -nostdlib -lgcc -g
 
 OBJS_C = $(patsubst src/%.c, build/%.o, $(C_SRC))
 OBJS_ASM_BOOTSTRAPPER = $(patsubst src/%.S, build/%.o, $(ASM_SRC_BOOTSTRAPPER))
@@ -62,4 +62,4 @@ iso: $(TARGET) $(TARGET_BOOTSTRAPER)
 	@echo "ISO created at build/os.iso"
 
 run: all
-	qemu-system-i386 -cdrom build/os.iso
+	qemu-system-i386  -cdrom build/os.iso
