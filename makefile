@@ -6,6 +6,7 @@ ASM = nasm
 LD_32 = i686-elf-gcc
 
 C_SRC_32 = src/bootstrapper/gdt.c src/bootstrapper/stdio.c src/bootstrapper/bootmain.c
+C_SRC = src/kernel/kernel.c
 ASM_SRC_BOOTSTRAPPER = src/bootstrapper/boot.S src/bootstrapper/header.S src/bootstrapper/utils.S src/bootstrapper/gdt_fl.S
 TARGET_KERN = build/kernel.elf 
 TARGET_BOOTSTRAPER = build/bootstrapper.elf
@@ -53,13 +54,13 @@ clean:
 	rm -rf build/*
 	@echo "Cleaned build directory"
 
-iso: $(TARGET) $(TARGET_BOOTSTRAPER)
+iso: $(TARGET_KERN) $(TARGET_BOOTSTRAPER)
 	@echo "Creating ISO"
 	mkdir -p isodir/boot/grub
-	cp $(TARGET) $(TARGET_BOOTSTRAPER) isodir/boot/
+	cp $(TARGET_KERN) $(TARGET_BOOTSTRAPER) isodir/boot/
 	cp grub.cfg isodir/boot/grub/grub.cfg
 	grub-mkrescue -o build/os.iso ./isodir
 	@echo "ISO created at build/os.iso"
 
 run: all
-	qemu-system-i386  -cdrom build/os.iso
+	qemu-system-i386 -m 512 -cdrom build/os.iso

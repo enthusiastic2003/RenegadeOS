@@ -140,7 +140,6 @@ void bprintf(const char* format, ...) {
     
     const char* p;
     char buffer[64];
-    size_t length;
     
     for (p = format; *p != '\0'; p++) {
         if (*p != '%') {
@@ -161,9 +160,27 @@ void bprintf(const char* format, ...) {
                 terminal_writestring(buffer);
                 break;
             }
+            case 'u': {
+                unsigned int value = va_arg(args, unsigned int);
+                itoa(value, buffer, 10);
+                terminal_writestring(buffer);
+                break;
+            }
             case 'x': {
                 unsigned int value = va_arg(args, unsigned int);
                 itoa(value, buffer, 16);
+                terminal_writestring(buffer);
+                break;
+            }
+            case 'c': {
+                char value = (char) va_arg(args, int);
+                terminal_putchar(value);
+                break;
+            }
+            case 'p': {
+                void* ptr = va_arg(args, void*);
+                uintptr_t addr = (uintptr_t) ptr;
+                itoa(addr, buffer, 16);
                 terminal_writestring(buffer);
                 break;
             }
@@ -175,4 +192,16 @@ void bprintf(const char* format, ...) {
     }
     
     va_end(args);
+}
+
+void cls(void) {
+    terminal_row = 0;
+    terminal_column = 0;
+    
+    for (size_t y = 0; y < VGA_HEIGHT; y++) {
+        for (size_t x = 0; x < VGA_WIDTH; x++) {
+            const size_t index = y * VGA_WIDTH + x;
+            terminal_buffer[index] = vga_entry(' ', terminal_color);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 global mode_check
-global gdt_flush
+global clear_paging
 extern bootstrapper_asm_info
 extern gpr
 
@@ -47,6 +47,16 @@ end_chk:
     mov esp, ebp               ; Restore the stack pointer from the base pointer
     pop ebp                    ; Restore the old base pointer
     ret                        ; Return to the caller
+
+clear_paging:
+    mov edi, 0x1000    ; Set the destination index to 0x1000.
+    mov cr3, edi       ; Set control register 3 to the destination index.
+    xor eax, eax       ; Nullify the A-register.
+    mov ecx, 4096      ; Set the C-register to 4096.
+    rep stosd          ; Clear the memory.
+    mov edi, cr3       ; Set the destination index to control register 3.
+    ret
+
 
 section .data
     protected_msg db '[MSG] Detected Mode: Protected Mode', 0

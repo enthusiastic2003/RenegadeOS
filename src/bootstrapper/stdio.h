@@ -35,3 +35,4 @@ void terminal_write(const char* , size_t );
 void terminal_writestring(const char* );
 void bootstrapper_asm_info(const char* str);
 void bprintf(const char* , ...);
+void cls(void);

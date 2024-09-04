@@ -17,6 +17,7 @@ extern terminal_initialize
 extern bootstrapper_asm_info
 extern gdt_install
 extern bootmain
+extern clear_paging
 
 start:
     cli
@@ -55,6 +56,8 @@ initialize_protected_mode:
     add esp, 4
     ; Jump to end
     ; Now, safe to call main c 
+
+    call clear_paging
 
     call bootmain
     sti

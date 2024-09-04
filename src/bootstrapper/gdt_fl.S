@@ -2,6 +2,7 @@
 
 global gdt_flush
 extern gp
+extern bootstrapper_asm_info
 
 ; Set up the Global Descriptor Table (GDT)
 gdt_flush:
