@@ -17,10 +17,16 @@ extern terminal_initialize
 extern bootstrapper_asm_info
 extern gdt_install
 extern bootmain
+
 start:
     cli
+
     ; Initialize stack pointer
     mov esp, stack_top
+    mov ebp, stack_top
+    push ebx
+    push eax
+
     ; Call functions to initialize terminal and check mode
     call terminal_initialize
     call mode_check
@@ -49,6 +55,7 @@ initialize_protected_mode:
     add esp, 4
     ; Jump to end
     ; Now, safe to call main c 
+
     call bootmain
     sti
     jmp end 
