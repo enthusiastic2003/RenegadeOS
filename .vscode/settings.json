@@ -1,6 +1,7 @@
 {
     "makefile.configureOnOpen": false,
     "files.associations": {
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "multiboot2.h": "c"
     }
 }

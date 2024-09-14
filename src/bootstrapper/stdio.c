@@ -38,7 +38,7 @@ void terminal_initialize(void)
 	terminal_row = 0;
 	terminal_column = 0;
 	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	terminal_buffer = (uint16_t*) 0xB8000;
+	terminal_buffer = (uint16_t*) 0xC03FF000;
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
 			const size_t index = y * VGA_WIDTH + x;
@@ -98,11 +98,12 @@ void bootstrapper_asm_info(const char* str)
 }
 
 // Helper functions for integer to string conversion
-static void itoa(int value, char* str, int base) {
+static void itoa(uintptr_t value, char* str, int base) {
     static const char digits[] = "0123456789abcdef";
     char* p = str;
-    int num = value;
-    
+    uintptr_t num = value;
+    intptr_t num_signed = (intptr_t) value;
+
     // Handle special case of 0
     if (value == 0) {
         *p++ = '0';
@@ -111,11 +112,11 @@ static void itoa(int value, char* str, int base) {
     }
     
     // Handle negative numbers
-    if (num < 0 && base == 10) {
+    if (base == 10 && num_signed < 0) {
         *p++ = '-';
-        num = -num;
+        num = -num_signed;
     }
-    
+
     // Convert to string
     char* start = p;
     do {
@@ -178,12 +179,13 @@ void bprintf(const char* format, ...) {
                 break;
             }
             case 'p': {
-                void* ptr = va_arg(args, void*);
-                uintptr_t addr = (uintptr_t) ptr;
-                itoa(addr, buffer, 16);
-                terminal_writestring(buffer);
-                break;
-            }
+    void* ptr = va_arg(args, void*);
+    uintptr_t addr = (uintptr_t) ptr;
+    terminal_writestring("0x");  // Print the "0x" prefix for addresses
+    itoa(addr, buffer, 16);
+    terminal_writestring(buffer);
+    break;
+}
             default:
                 terminal_putchar('%');
                 terminal_putchar(*p);

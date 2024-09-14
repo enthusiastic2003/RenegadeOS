@@ -46,4 +46,4 @@ iso: $(TARGET)
 	@echo "ISO created at build/os.iso"
 
 run: all
-	qemu-system-i386 -accel kvm -m 512 -cdrom build/os.iso
+	qemu-system-i386 -accel kvm  -m 512 -cdrom build/os.iso
