@@ -25,13 +25,14 @@ extern bootmain
 extern clear_paging
 extern _kernel_end
 extern _kernel_start
+global boot_page_directory
 
 start:
     cli
 
     mov edi, (boot_page_table1 - 0xC0000000)  ; Load physical address of boot_page_table1
     mov esi, 0                                ; Start at address 0
-    mov ecx, 1023                             ; Map 1023 pages
+    mov ecx, 1023                                ; Map 1023 pages
 
 map_loop:
     cmp esi, 0                ; Check if mapping kernel

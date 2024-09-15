@@ -2,18 +2,28 @@
 #include "multiboot2.h"
 #include "elf64.h"
 #include "gdt.h"
+#include "paging.h"
+
 extern int _kernel_end;
+extern int boot_page_directory;
 
 void bootmain(unsigned long magic, unsigned long addr) {
     int var = 10;
     int* any_adr = &var;
+    page_directory_t* pd = (page_directory_t*) &boot_page_directory;
+
     bprintf("This is a 32-bit kernel.\n");
     bprintf("Magic number: %x\n", magic);
     bprintf("Multiboot info address: %x\n",  *(unsigned *)addr);    
     bprintf("Magic address: %x\n", &magic);
     bprintf("Kernel end address: %x\n", &_kernel_end);
+    bprintf("Boot page directory address: %x\n", &boot_page_directory);
     struct multiboot_tag *tag;
     unsigned size;
+
+    bprintf("Printing the last entry of the page directory %p\n", pd->entries[768]);
+    page_table_t* pt = (page_table_t*) pd->entries[768];
+    bprintf("Printing the last entry of the page table %p\n", &(pt->entries[0]));
 
     //for(;;);
     size = *(unsigned *) addr;
@@ -59,7 +69,7 @@ void bootmain(unsigned long magic, unsigned long addr) {
             multiboot_memory_map_t *mmap;
 
             bprintf ("mmap\n");
-      
+
             for (mmap = ((struct multiboot_tag_mmap *) tag)->entries;
                  (multiboot_uint8_t *) mmap 
                    < (multiboot_uint8_t *) tag + tag->size;
@@ -76,7 +86,7 @@ void bootmain(unsigned long magic, unsigned long addr) {
           }
           break;
         }
-    
+
 }
 
 //cls();

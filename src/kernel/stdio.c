@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "stdio.h"
+#include "string.h"
 #include <stdarg.h>
 size_t terminal_row;
 size_t terminal_column;
@@ -25,13 +26,13 @@ static inline uint16_t vga_entry(unsigned char uc, uint8_t color)
 	return (uint16_t) uc | (uint16_t) color << 8;
 }
 
-size_t strlen(const char* str) 
-{
-	size_t len = 0;
-	while (str[len])
-		len++;
-	return len;
-}
+// size_t strlen(const char* str) 
+// {
+// 	size_t len = 0;
+// 	while (str[len])
+// 		len++;
+// 	return len;
+// }
 
 void terminal_initialize(void) 
 {

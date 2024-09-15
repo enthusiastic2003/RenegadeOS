@@ -2,6 +2,11 @@
     "makefile.configureOnOpen": false,
     "files.associations": {
         "stdint.h": "c",
-        "multiboot2.h": "c"
+        "multiboot2.h": "c",
+        "paging.h": "c",
+        "stdbool.h": "c",
+        "mmngr_phys.h": "c",
+        "stddef.h": "c",
+        "string.h": "c"
     }
 }

@@ -2,7 +2,7 @@ CC_32 = i686-elf-gcc
 ASM = nasm
 LD_32 = i686-elf-gcc
 
-C_SRC_32 = src/kernel/gdt.c src/kernel/stdio.c src/kernel/bootmain.c
+C_SRC_32 = src/kernel/gdt.c src/kernel/stdio.c src/kernel/bootmain.c src/kernel/vmmngr_pde.c src/kernel/vmmngr_pte.c src/kernel/mmngr_phys.c src/kernel/mmngr_virtual.c src/kernel/string.c
 ASM_SRC = src/kernel/boot.S src/kernel/header.S src/kernel/utils.S src/kernel/gdt_fl.S
 TARGET = build/kernel.elf
 
