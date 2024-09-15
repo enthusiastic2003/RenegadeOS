@@ -41,7 +41,7 @@ void gdt_install() {
     gdt_flush();
 
     // Print message or call other functions
-    // Example: bootstrapper_asm_info("32 bit GDT Installed");
+    bootstrapper_asm_info("32 bit GDT Installed");
     return;
 }
 

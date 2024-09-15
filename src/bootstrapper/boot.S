@@ -34,9 +34,9 @@ start:
     mov ecx, 1023                             ; Map 1023 pages
 
 map_loop:
-    cmp esi, _kernel_start                ; Check if mapping kernel
+    cmp esi, 0                ; Check if mapping kernel
     jl skip                               ; Skip if not in kernel range
-    cmp esi, (_kernel_end - 0xC0000000)   
+    cmp esi, (0x3fffff)   
     jge end_map                           ; Stop if past kernel
 
     mov edx, esi                          ; Map physical address
@@ -89,6 +89,11 @@ fantasy_high:
     ; Set up the stack.
     mov esp, stack_top
     mov ebp, stack_top
+
+    add ebx, 0xC0000000
+    
+    push ebx
+    push eax
 
     call terminal_initialize
 
